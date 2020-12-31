@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../src/bstar.hpp
+vector
+-
+iostream
+-
+string
+-
+fstream
+-
+memory
+-
+list
+-
+utility
+-
+limits
+-
+algorithm
+-
+
+/home/chiu/bstar_floorplan/main/main.cpp
+bstar.hpp
+-
+

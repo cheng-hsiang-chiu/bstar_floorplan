@@ -1,0 +1,2 @@
+update_contour_after_insertion 2 0.00189362
+---

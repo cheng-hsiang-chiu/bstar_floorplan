@@ -1,0 +1,30 @@
+Start testing: Dec 29 17:35 MST
+----------------------------------------------------------
+1/1 Testing: update_contour_after_insertion
+1/1 Test: update_contour_after_insertion
+Command: "/home/chiu/bstar_floorplan/build/tests/basics" "--test-case=update_contour_after_insertion"
+Directory: /home/chiu/bstar_floorplan/build/tests
+"update_contour_after_insertion" start time: Dec 29 17:35 MST
+Output:
+----------------------------------------------------------
+[doctest] doctest version is "2.4.0"
+[doctest] run with "--help" for options
+bstar constructor
+bstartester constructor
+0x7ffca78ba4c0
+0x7ffca78ba4c0
+successfully open circuit
+bstartester open file
+===============================================================================
+[doctest] test cases:      1 |      1 passed |      0 failed |      0 skipped
+[doctest] assertions:      2 |      2 passed |      0 failed |
+[doctest] Status: SUCCESS!
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"update_contour_after_insertion" end time: Dec 29 17:35 MST
+"update_contour_after_insertion" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Dec 29 17:35 MST
