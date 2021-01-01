@@ -340,8 +340,47 @@ void BStar::_rotate_module(std::shared_ptr<BNode> node) {
 void BStar::_swap_two_nodes(
   std::shared_ptr<BNode> node1, std::shared_ptr<BNode> node2) {
 
-  std::shared_ptr<BNode> temp;
+  std::swap(node1->parent, node2->parent);
+  
+  if (node1->parent) {
+    if (node1->parent->left == node2)
+      node1->parent->left = node1;
+    else
+      node1->parent->right = node1;
+  }
 
+  if (node2->parent) {
+    if (node2->parent->left == node1)
+      node2->parent->left = node2;
+    else
+      node2->parent->right = node2;
+  }
+    
+
+
+  /*
+  else {
+    if (node1->parent) 
+      (node1->parent)->update_child(node1, node2);
+  
+    if (node2->parent)
+      (node2->parent)->update_child(node2, node1);
+  }
+  */
+  // swap the left and right child of the two nodes
+  std::swap(node1->left, node2->left);
+  std::swap(node1->right, node2->right);
+
+  // update children's parent pointer
+  if (node1->left)
+    node1->left->parent = node1;
+  if (node1->right)
+    node1->right->parent = node1;
+  if (node2->left)
+    node2->left->parent = node2;
+  if (node1->right)
+    node1->right->parent = node2;
+  /*  
   if (node1->parent) 
     (node1->parent)->update_child(node1, node2);
   
@@ -369,6 +408,7 @@ void BStar::_swap_two_nodes(
     (node2->left)->update_parent(node1);
   if (node2->right)
     (node2->right)->update_parent(node1);
+  */
 }
 
 
@@ -376,7 +416,7 @@ void BStar::_swap_two_nodes(
 void BNode::update_child(
   const std::shared_ptr<BNode> old_child, 
   const std::shared_ptr<BNode> new_child) {
-
+  std::cout << "this -> id = " << this->id << '\n';
   if (this->left == old_child)
     this->left = new_child;
 

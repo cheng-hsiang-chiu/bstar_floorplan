@@ -13,9 +13,11 @@ class BStarTester {
     std::vector<std::shared_ptr<BNode>> get_contour() const;
     std::vector<std::shared_ptr<BNode>> get_modules() const;
     void open(const std::string input_file); 
+    void dump(std::ostream& os);
     void swap_two_nodes(
       std::shared_ptr<BNode> node1,
       std::shared_ptr<BNode> node2);
+    void generate_initial_tree();
     
     BStar bs;
     std::vector<int> contour;
@@ -49,10 +51,19 @@ std::vector<std::shared_ptr<BNode>> BStarTester::get_modules() const {
 }
 
 
+void BStarTester::dump(std::ostream& os){
+  bs.dump(os);
+}
+
 void BStarTester::swap_two_nodes(
   std::shared_ptr<BNode> node1,
   std::shared_ptr<BNode> node2){
-  
+  bs._swap_two_nodes(node1, node2); 
+}
+
+
+void BStarTester::generate_initial_tree() {
+  bs._generate_initial_tree();
 }
 
 }

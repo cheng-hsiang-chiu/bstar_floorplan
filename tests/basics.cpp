@@ -4,7 +4,7 @@
 #include "../src/bstar_tester.hpp"
 
 
-
+/*
 TEST_CASE("update_contour_after_insertion" * doctest::timeout(300)) {
   
   bstar::BStarTester tester;
@@ -24,25 +24,29 @@ TEST_CASE("update_contour_after_insertion" * doctest::timeout(300)) {
   //REQUIRE((*contour.begin()).first == 0);
   //REQUIRE((*contour.begin()).second == 0);
 }
+*/
 
 
 TEST_CASE("swap_two_nodes" * doctest::timeout(300)) {
   
   bstar::BStarTester tester;
 
-  tester.open("../circuits/circuit1.txt");
+  tester.open("/home/chiu/bstar_floorplan/circuits/circuit1.txt");
+  tester.generate_initial_tree();
+   
+  std::vector<std::shared_ptr<bstar::BNode>> modules;
 
-  std::cout << "in test case, after open\n"; 
-  std::vector<std::shared_ptr<bstar::BNode>> contour;
+  modules = tester.get_modules();
   
-  std::shared_ptr<bstar::BNode> node = tester.get_modules()[0];
+  tester.dump(std::cout);
   
-  tester.update_contour_after_insertion(node);
+  tester.swap_two_nodes(modules[3], modules[1]);
+  
+  std::cout << "swap two nodes\n";
+  
+  tester.dump(std::cout);
  
-  contour = tester.get_contour();
-  for (auto c : contour)
-    std::cout << c->id << '\n'; 
-  //REQUIRE((*contour.begin()).first == 0);
+  REQUIRE(1 == 1);
   //REQUIRE((*contour.begin()).second == 0);
 }
 
