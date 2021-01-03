@@ -21,15 +21,6 @@ struct BNode {
   std::shared_ptr<BNode> parent{ nullptr };
   std::shared_ptr<BNode> left{ nullptr };
   std::shared_ptr<BNode> right{ nullptr };  
-  
-  void update_child(
-    const std::shared_ptr<BNode> old_child, 
-    const std::shared_ptr<BNode> new_child
-  );
-
-  void update_parent(
-    const std::shared_ptr<BNode> new_parent
-  );
 };
 
 
@@ -68,6 +59,8 @@ class BStar {
     void _rotate_module(std::shared_ptr<BNode> node);
     void _swap_two_nodes(
       std::shared_ptr<BNode> node1, std::shared_ptr<BNode> node2);
+    void _delete_and_insert(
+      std::shared_ptr<BNode> node);
 };
 
 
@@ -340,98 +333,139 @@ void BStar::_rotate_module(std::shared_ptr<BNode> node) {
 void BStar::_swap_two_nodes(
   std::shared_ptr<BNode> node1, std::shared_ptr<BNode> node2) {
 
-  std::swap(node1->parent, node2->parent);
-  
-  if (node1->parent) {
-    if (node1->parent->left == node2)
-      node1->parent->left = node1;
-    else
-      node1->parent->right = node1;
+  // case 1 : same parent
+  if (node1->parent == node2->parent) {
+    std::swap(node1->parent->left, node1->parent->right);
+    std::swap(node1->left, node2->left);
+    std::swap(node1->right, node2->right);
+    if (node1->left)   node1->left->parent = node1;
+    if (node1->right)  node1->right->parent = node1;
+    if (node2->left)   node2->left->parent = node2;
+    if (node2->right)  node2->right->parent = node2;
+  } 
+
+  // case 2 : parent-child relationship
+  else if ((node1->parent == node2) || (node2->parent == node1)) {
+    std::shared_ptr<BNode> parent;
+    std::shared_ptr<BNode> child;
+
+    // decide who is the parent 
+    if (node1->parent == node2) {
+      parent = node2;
+      child = node1;
+    }
+    else {
+      parent = node1;
+      child = node2;
+    }
+
+    if (parent->parent) {
+      if (parent->parent->left == parent)
+        parent->parent->left = child;
+      else
+        parent->parent->right = child;
+    }
+
+    child->parent = parent->parent;
+    parent->parent = child;
+     
+    if (parent->left == child) {
+      parent->left = child->left;
+      child->left = parent;
+      std::swap(parent->right, child->right);
+      
+      if (parent->left)
+        parent->left->parent = parent;
+      if (parent->right)
+        parent->right->parent = parent;
+      if (child->right)
+        child->right->parent = child;  
+    }
+      
+    else {
+      parent->right = child->right;
+      child->right = parent;
+      std::swap(parent->left, child->left);
+      
+      if (parent->right)
+        parent->right->parent = parent;
+      if (parent->left)
+        parent->left->parent = parent;
+      if (child->left)
+        child->left->parent = child;  
+    }
   }
 
-  if (node2->parent) {
-    if (node2->parent->left == node1)
-      node2->parent->left = node2;
-    else
-      node2->parent->right = node2;
-  }
-    
-
-
-  /*
+  // case 3 : no relationship
   else {
-    if (node1->parent) 
-      (node1->parent)->update_child(node1, node2);
-  
-    if (node2->parent)
-      (node2->parent)->update_child(node2, node1);
+    std::shared_ptr<BNode> n1_old_parent = node1->parent;
+    std::shared_ptr<BNode> n2_old_parent = node2->parent;
+
+    std::swap(node1->parent, node2->parent);
+    std::swap(node1->left, node2->left);
+    std::swap(node1->right, node2->right);
+    if (node1->left)   node1->left->parent = node1;
+    if (node1->right)  node1->right->parent = node1;
+    if (node2->left)   node2->left->parent = node2;
+    if (node2->right)  node2->right->parent = node2;
+
+    if (n1_old_parent) {
+      if (n1_old_parent->left == node1)
+        n1_old_parent->left = node2;
+      else
+        n1_old_parent->right = node2; 
+    }
+
+    if (n2_old_parent) {
+      if (n2_old_parent->left == node2)
+        n2_old_parent->left = node1;
+      else
+        n2_old_parent->right = node1; 
+    }
   }
-  */
-  // swap the left and right child of the two nodes
-  std::swap(node1->left, node2->left);
-  std::swap(node1->right, node2->right);
-
-  // update children's parent pointer
-  if (node1->left)
-    node1->left->parent = node1;
-  if (node1->right)
-    node1->right->parent = node1;
-  if (node2->left)
-    node2->left->parent = node2;
-  if (node1->right)
-    node1->right->parent = node2;
-  /*  
-  if (node1->parent) 
-    (node1->parent)->update_child(node1, node2);
-  
-  if (node2->parent)
-    (node2->parent)->update_child(node2, node1);
-
-  temp = node1->parent;
-
-  node1->update_parent(node2->parent);
-  node2->update_parent(temp);
-
-  temp = node1->left;
-  node1->update_child(node1->left, node2->left);
-  node2->update_child(node2->left, temp);
-
-  temp = node1->right;
-  node1->update_child(node1->right, node2->right);
-  node2->update_child(node2->right, temp);
-
-  if (node1->left)
-    (node1->left)->update_parent(node2);
-  if (node1->right)
-    (node1->right)->update_parent(node2);
-  if (node2->left)
-    (node2->left)->update_parent(node1);
-  if (node2->right)
-    (node2->right)->update_parent(node1);
-  */
 }
 
 
-// parent updates child pointer
-void BNode::update_child(
-  const std::shared_ptr<BNode> old_child, 
-  const std::shared_ptr<BNode> new_child) {
-  std::cout << "this -> id = " << this->id << '\n';
-  if (this->left == old_child)
-    this->left = new_child;
+// delete one node and insert it back
+void BStar::_delete_and_insert(
+  std::shared_ptr<BNode> node) {
+ 
+  // case 1 : two children exist
+  if (node->left && node->right) {
+    
+  }
+ 
+  // case 2 : only left child exists
+  else if (node->left) {
+    std::shared_ptr<BNode> parent = node->parent;
+    std::shared_ptr<BNode> child = node->left;
 
-  else
-    this->right = new_child;
+    if (parent) {
+      
+    }
+  }
+
+  // case 3 : only right child exists
+  else if (node->right) {
+    
+  }
+
+  // case 4 : no children
+  else {
+    if (node->parent == nullptr)
+      return;
+    else {
+      if (node->parent->left == node) {
+        node->parent->left = nullptr;
+        node->parent = nullptr;
+      }
+      else {
+        node->parent->right = nullptr; 
+        node->parent = nullptr;
+      }
+    }
+  }
 }
-
-
-// child updates parent pointer
-void BNode::update_parent(
-  const std::shared_ptr<BNode> new_parent) {
-  
-  this->parent = new_parent; 
-}
-
 
 
 }

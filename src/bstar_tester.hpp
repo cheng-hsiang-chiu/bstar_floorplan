@@ -18,7 +18,9 @@ class BStarTester {
       std::shared_ptr<BNode> node1,
       std::shared_ptr<BNode> node2);
     void generate_initial_tree();
-    
+    void delete_and_insert(
+      std::shared_ptr<BNode> node);
+        
     BStar bs;
     std::vector<int> contour;
 };
@@ -65,5 +67,12 @@ void BStarTester::swap_two_nodes(
 void BStarTester::generate_initial_tree() {
   bs._generate_initial_tree();
 }
+
+
+void BStarTester::delete_and_insert(
+  std::shared_ptr<BNode> node){
+  bs._delete_and_insert(node);
+}
+
 
 }
