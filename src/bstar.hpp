@@ -52,7 +52,7 @@ class BStar {
 
     void _generate_initial_tree();
     void _pack(std::shared_ptr<BNode> node);
-    void _update_contour_after_insertion(
+    void _update_contour(
       const std::shared_ptr<BNode> node, const bool is_left);
     
     size_t _calculate_coordinate_y(
@@ -67,6 +67,7 @@ class BStar {
 };
 
 
+// BStar constructor
 BStar::BStar() {
   std::cout << "bstar constructor\n";
   std::srand(std::time(0)); 
@@ -183,7 +184,7 @@ void BStar::_generate_initial_tree() {
 
 
 // update contour
-void BStar::_update_contour_after_insertion(
+void BStar::_update_contour(
   const std::shared_ptr<BNode> node, const bool is_left) {
   std::cout << "in update contour\n";
   std::cout << "node->id = " << node->id << '\n';
@@ -291,12 +292,12 @@ size_t BStar::_calculate_coordinate_y(
 void BStar::_pack(std::shared_ptr<BNode> node) {
   //std::cout << "node->id = " << node->id << '\n';
   if (node == _root)
-    _update_contour_after_insertion(node, true);
+    _update_contour(node, true);
     
   if (node->left) {
     node->left->llx = node->llx + node->width;
     node->left->lly = _calculate_coordinate_y(node->left, true); 
-    _update_contour_after_insertion(node->left, true);
+    _update_contour(node->left, true);
 
     _pack(node->left);
   }
@@ -304,7 +305,7 @@ void BStar::_pack(std::shared_ptr<BNode> node) {
   if (node->right) {
     node->right->llx = node->llx;
     node->right->lly = _calculate_coordinate_y(node->right, false);
-    _update_contour_after_insertion(node->right, false);
+    _update_contour(node->right, false);
     
     _pack(node->right); 
   }
@@ -326,7 +327,7 @@ void BStar::optimize() {
 }
 
 
-// rotate one module
+// operation 1 : rotate one module
 void BStar::_rotate_module(std::shared_ptr<BNode> node) {
   size_t temp = node->width;
   node->width = node->height;
@@ -334,7 +335,7 @@ void BStar::_rotate_module(std::shared_ptr<BNode> node) {
 }
 
 
-// swap two nodes
+// operation 2 : swap two nodes
 void BStar::_swap_two_nodes(
   std::shared_ptr<BNode> node1, std::shared_ptr<BNode> node2) {
 
@@ -431,6 +432,7 @@ void BStar::_swap_two_nodes(
 }
 
 
+// operation 3 : delete one node then insert it back 
 void BStar::_delete_and_insert() {
   std::shared_ptr<BNode> node = _modules[std::rand()%(_modules.size())];
   
@@ -439,13 +441,41 @@ void BStar::_delete_and_insert() {
 }
 
 
-
+// insert the node to the tree
 void BStar::_insert_node(
-  std::shared_ptr<BNode> node){} 
+  std::shared_ptr<BNode> node){
+  
+  std::shared_ptr<BNode> parent = _modules[std::rand()%(_modules.size())];
+
+  // tentative parent is neither the node nor has two children
+  while ((parent == node) || ((parent->left) && (parent->right)))
+    parent = _modules[std::rand()%(_modules.size())];
+
+  // tentative parent has no children
+  if ((parent->left == nullptr) && (parent->right == nullptr)) {
+    if (std::rand()%2 == 0)
+      parent->left = node;
+    else
+      parent->right = node;
+
+    node->parent = parent;
+  }
+
+  // tentative parent has no left child
+  else if (parent->left == nullptr) {
+    parent->left = node;
+    node->parent = parent;
+  }
+
+  // tentative parent has no right child
+  else {
+    parent->right = parent;
+    node->parent = parent;
+  }
+} 
 
 
-
-// delete one node and insert it back
+// delete one node
 void BStar::_delete_node(
   std::shared_ptr<BNode> node) {
  

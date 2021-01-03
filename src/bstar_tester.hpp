@@ -7,7 +7,7 @@ class BStarTester {
   public:
     BStarTester();
 
-    void update_contour_after_insertion(
+    void update_contour(
       const std::shared_ptr<BNode> node);
 
     std::vector<std::shared_ptr<BNode>> get_contour() const;
@@ -20,7 +20,9 @@ class BStarTester {
     void generate_initial_tree();
     void delete_node(
       std::shared_ptr<BNode> node);
-        
+    void insert_node(
+      std::shared_ptr<BNode> node);
+            
     BStar bs;
     std::vector<int> contour;
 };
@@ -31,9 +33,9 @@ BStarTester::BStarTester() {
 }
 
 
-void BStarTester::update_contour_after_insertion(
+void BStarTester::update_contour(
   const std::shared_ptr<BNode> node) {
-  bs._update_contour_after_insertion(node, true);
+  bs._update_contour(node, true);
 }
 
 
@@ -57,9 +59,10 @@ void BStarTester::dump(std::ostream& os){
   bs.dump(os);
 }
 
+
 void BStarTester::swap_two_nodes(
   std::shared_ptr<BNode> node1,
-  std::shared_ptr<BNode> node2){
+  std::shared_ptr<BNode> node2) {
   bs._swap_two_nodes(node1, node2); 
 }
 
@@ -70,9 +73,17 @@ void BStarTester::generate_initial_tree() {
 
 
 void BStarTester::delete_node(
-  std::shared_ptr<BNode> node){
+  std::shared_ptr<BNode> node) {
   bs._delete_node(node);
 }
+
+
+void BStarTester::insert_node(
+  std::shared_ptr<BNode> node) {
+  bs._insert_node(node);
+}
+
+
 
 
 }

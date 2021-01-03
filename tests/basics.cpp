@@ -1130,38 +1130,23 @@ TEST_CASE("delete_node" * doctest::timeout(300)) {
     REQUIRE(modules[5]->parent->id == 0);
     REQUIRE(modules[5]->left == nullptr);
     REQUIRE(modules[5]->right == nullptr);
+
   }
-  /*
-  SUBCASE("node two children") {
-    tester.delete_and_insert(modules[0]);
+  
+  SUBCASE("delete and insert") {
+    tester.delete_node(modules[0]);
     
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    std::cout << "after deletion\n";
+    tester.dump(std::cout);
 
-    REQUIRE(modules[1]->parent == nullptr);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 2);
-
-    REQUIRE(modules[2]->parent->id == 1);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
-    
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right->id == 4);
-    
-    REQUIRE(modules[4]->parent->id == 3);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
-    
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    std::cout << "after insertion\n";
+    tester.insert_node(modules[0]);
+    tester.dump(std::cout);
   }
-  
+
+  /*
   SUBCASE("node two children") {
     tester.delete_node(modules[0]);
     
