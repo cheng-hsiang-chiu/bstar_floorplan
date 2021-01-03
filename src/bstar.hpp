@@ -7,7 +7,8 @@
 #include <utility>
 #include <limits>
 #include <algorithm>
-
+#include <ctime>
+#include <cstdlib>
 
 
 namespace bstar{
@@ -30,6 +31,7 @@ class BStar {
 
   public:
     BStar();
+
     //void simulated_annealing();
     void optimize();
     void open(const std::string input_file);
@@ -66,6 +68,8 @@ class BStar {
 
 BStar::BStar() {
   std::cout << "bstar constructor\n";
+  std::srand(std::time(0)); 
+  //std::srand(std::time(nullptr));
 }
 
 
@@ -432,7 +436,13 @@ void BStar::_delete_and_insert(
  
   // case 1 : two children exist
   if (node->left && node->right) {
-    
+    while (node->left && node->right) {
+      if ((std::rand()%2) == 0)  
+        _swap_two_nodes(node, node->left);
+      else 
+        _swap_two_nodes(node, node->right);
+    }
+    _delete_and_insert(node);
   }
  
   // case 2 : only left child exists
@@ -441,13 +451,30 @@ void BStar::_delete_and_insert(
     std::shared_ptr<BNode> child = node->left;
 
     if (parent) {
-      
+      if (parent->left == node)
+        parent->left = child;  
+      else
+        parent->right = child;
     }
+    node->parent = nullptr;
+    node->left = nullptr;
+    child->parent = parent;
   }
 
   // case 3 : only right child exists
   else if (node->right) {
-    
+    std::shared_ptr<BNode> parent = node->parent;
+    std::shared_ptr<BNode> child = node->right;
+
+    if (parent) {
+      if (parent->left == node)
+        parent->left = child;  
+      else
+        parent->right = child;
+    }
+    node->parent = nullptr;
+    node->right = nullptr;
+    child->parent = parent;
   }
 
   // case 4 : no children
