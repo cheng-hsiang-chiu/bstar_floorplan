@@ -1001,7 +1001,7 @@ TEST_CASE("swap_two_nodes" * doctest::timeout(300)) {
 }
 
 
-TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
+TEST_CASE("delete_node" * doctest::timeout(300)) {
 
   bstar::BStarTester tester;
 
@@ -1013,7 +1013,7 @@ TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
   modules = tester.get_modules();
   
   SUBCASE("node is a leaf node - 1") {
-    tester.delete_and_insert(modules[3]);
+    tester.delete_node(modules[3]);
 
     modules = tester.get_modules();
     
@@ -1043,7 +1043,7 @@ TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
   }
 
   SUBCASE("node is a leaf node - 2") {
-    tester.delete_and_insert(modules[4]);
+    tester.delete_node(modules[4]);
     
     modules = tester.get_modules();
     
@@ -1073,7 +1073,7 @@ TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
   }
   
   SUBCASE("node is a leaf node - 3") {
-    tester.delete_and_insert(modules[5]);
+    tester.delete_node(modules[5]);
     
     modules = tester.get_modules();
     
@@ -1103,7 +1103,7 @@ TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
   }
 
   SUBCASE("node has only left child") {
-    tester.delete_and_insert(modules[2]);
+    tester.delete_node(modules[2]);
     
     modules = tester.get_modules();
     
@@ -1161,9 +1161,9 @@ TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
     REQUIRE(modules[5]->left == nullptr);
     REQUIRE(modules[5]->right == nullptr);
   }
-  */
+  
   SUBCASE("node two children") {
-    tester.delete_and_insert(modules[0]);
+    tester.delete_node(modules[0]);
     
     modules = tester.get_modules();
     
@@ -1191,7 +1191,9 @@ TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
     REQUIRE(modules[5]->left == nullptr);
     REQUIRE(modules[5]->right == nullptr);
   }
+  */
 }
+
 /*
 TEST_CASE("split_node" * doctest::timeout(300)) {
   

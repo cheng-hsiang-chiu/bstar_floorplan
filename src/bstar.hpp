@@ -61,8 +61,9 @@ class BStar {
     void _rotate_module(std::shared_ptr<BNode> node);
     void _swap_two_nodes(
       std::shared_ptr<BNode> node1, std::shared_ptr<BNode> node2);
-    void _delete_and_insert(
-      std::shared_ptr<BNode> node);
+    void _delete_and_insert();
+    void _delete_node(std::shared_ptr<BNode> node);
+    void _insert_node(std::shared_ptr<BNode> node);
 };
 
 
@@ -430,8 +431,22 @@ void BStar::_swap_two_nodes(
 }
 
 
+void BStar::_delete_and_insert() {
+  std::shared_ptr<BNode> node = _modules[std::rand()%(_modules.size())];
+  
+  _delete_node(node);
+  _insert_node(node); 
+}
+
+
+
+void BStar::_insert_node(
+  std::shared_ptr<BNode> node){} 
+
+
+
 // delete one node and insert it back
-void BStar::_delete_and_insert(
+void BStar::_delete_node(
   std::shared_ptr<BNode> node) {
  
   // case 1 : two children exist
@@ -442,7 +457,7 @@ void BStar::_delete_and_insert(
       else 
         _swap_two_nodes(node, node->right);
     }
-    _delete_and_insert(node);
+    _delete_node(node);
   }
  
   // case 2 : only left child exists

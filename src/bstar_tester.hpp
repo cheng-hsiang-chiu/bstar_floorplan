@@ -18,7 +18,7 @@ class BStarTester {
       std::shared_ptr<BNode> node1,
       std::shared_ptr<BNode> node2);
     void generate_initial_tree();
-    void delete_and_insert(
+    void delete_node(
       std::shared_ptr<BNode> node);
         
     BStar bs;
@@ -69,9 +69,9 @@ void BStarTester::generate_initial_tree() {
 }
 
 
-void BStarTester::delete_and_insert(
+void BStarTester::delete_node(
   std::shared_ptr<BNode> node){
-  bs._delete_and_insert(node);
+  bs._delete_node(node);
 }
 
 
