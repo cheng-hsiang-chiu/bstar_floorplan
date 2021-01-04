@@ -21,7 +21,8 @@ class BStarTester {
     void delete_node(
       std::shared_ptr<BNode> node);
     void insert_node(
-      std::shared_ptr<BNode> node);
+      std::shared_ptr<BNode> target,
+      std::shared_ptr<BNode> parent);
             
     BStar bs;
     std::vector<int> contour;
@@ -79,8 +80,9 @@ void BStarTester::delete_node(
 
 
 void BStarTester::insert_node(
-  std::shared_ptr<BNode> node) {
-  bs._insert_node(node);
+  std::shared_ptr<BNode> target,
+  std::shared_ptr<BNode> parent) {
+  bs._insert_node(target, parent);
 }
 
 

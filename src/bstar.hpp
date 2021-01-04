@@ -9,9 +9,16 @@
 #include <algorithm>
 #include <ctime>
 #include <cstdlib>
+#include <random>
+
+
+
+#define BSFP_FROZEN_TEMPERATURE 0.1
+#define BSFP_MAX_ITERATIONS_PER_TEMPERATURE 1000
 
 
 namespace bstar{
+
 
 struct BNode {
   int id;
@@ -32,7 +39,6 @@ class BStar {
   public:
     BStar();
 
-    //void simulated_annealing();
     void optimize();
     void open(const std::string input_file);
     void dump(std::ostream& os) const;
@@ -40,6 +46,7 @@ class BStar {
 
   private:
     std::string _input_file;
+    
     std::vector<std::shared_ptr<BNode>> _modules;
     
     // _contour stores modules which define the contour
@@ -50,8 +57,15 @@ class BStar {
     size_t _urx = 0;
     size_t _ury = 0;
 
+    //std::mt19937 _gen(_rd());  
+    //std::uniform_real_distribution<> _dis(0, 1);
+
     void _generate_initial_tree();
-    void _pack(std::shared_ptr<BNode> node);
+    
+    size_t _pack(std::vector<std::shared_ptr<BNode>>);
+
+    void _pack_helper(std::shared_ptr<BNode> node);
+    
     void _update_contour(
       const std::shared_ptr<BNode> node, const bool is_left);
     
@@ -59,11 +73,24 @@ class BStar {
       const std::shared_ptr<BNode> node, const bool is_left);
 
     void _rotate_module(std::shared_ptr<BNode> node);
+    
     void _swap_two_nodes(
       std::shared_ptr<BNode> node1, std::shared_ptr<BNode> node2);
-    void _delete_and_insert();
+    
+    void _delete_and_insert(
+      std::shared_ptr<BNode> target,
+      std::shared_ptr<BNode> parent);
+    
     void _delete_node(std::shared_ptr<BNode> node);
-    void _insert_node(std::shared_ptr<BNode> node);
+    
+    void _insert_node(
+      std::shared_ptr<BNode> target, 
+      std::shared_ptr<BNode> parent);
+
+    void _simulated_annealing(const double initial_temperature);
+
+    void _generate_neighbor(
+      std::vector<std::shared_ptr<BNode>> modules);
 };
 
 
@@ -289,17 +316,37 @@ size_t BStar::_calculate_coordinate_y(
 
 
 // pack the modules
-void BStar::_pack(std::shared_ptr<BNode> node) {
+size_t BStar::_pack(
+  std::vector<std::shared_ptr<BNode>> modules) {
+  _contour.clear();
+  _urx = 0;
+  _ury = 0;
+
+  for (auto m : modules) {
+    if (m->parent == nullptr) {
+      _root = m;
+      break;
+    }
+  }
+  _pack_helper(_root);
+  
+  return _urx * _ury;
+}
+
+
+// auxiliary function for _pack
+void BStar::_pack_helper(std::shared_ptr<BNode> node) {
   //std::cout << "node->id = " << node->id << '\n';
-  if (node == _root)
+  if (node == _root) 
     _update_contour(node, true);
+  
     
   if (node->left) {
     node->left->llx = node->llx + node->width;
     node->left->lly = _calculate_coordinate_y(node->left, true); 
     _update_contour(node->left, true);
 
-    _pack(node->left);
+    _pack_helper(node->left);
   }
 
   if (node->right) {
@@ -307,7 +354,7 @@ void BStar::_pack(std::shared_ptr<BNode> node) {
     node->right->lly = _calculate_coordinate_y(node->right, false);
     _update_contour(node->right, false);
     
-    _pack(node->right); 
+    _pack_helper(node->right); 
   }
 
   if (node == _root) {
@@ -323,7 +370,8 @@ void BStar::_pack(std::shared_ptr<BNode> node) {
 void BStar::optimize() {
   _generate_initial_tree();
 
-  _pack(_root);
+  //_pack(_root);
+  _simulated_annealing(1000);
 }
 
 
@@ -433,44 +481,40 @@ void BStar::_swap_two_nodes(
 
 
 // operation 3 : delete one node then insert it back 
-void BStar::_delete_and_insert() {
-  std::shared_ptr<BNode> node = _modules[std::rand()%(_modules.size())];
-  
-  _delete_node(node);
-  _insert_node(node); 
+void BStar::_delete_and_insert(
+  std::shared_ptr<BNode> target,
+  std::shared_ptr<BNode> parent) {
+
+  _delete_node(target);
+  _insert_node(target, parent); 
 }
 
 
 // insert the node to the tree
 void BStar::_insert_node(
-  std::shared_ptr<BNode> node){
+  std::shared_ptr<BNode> target,
+  std::shared_ptr<BNode> parent){
   
-  std::shared_ptr<BNode> parent = _modules[std::rand()%(_modules.size())];
-
-  // tentative parent is neither the node nor has two children
-  while ((parent == node) || ((parent->left) && (parent->right)))
-    parent = _modules[std::rand()%(_modules.size())];
-
-  // tentative parent has no children
+  // parent has no children
   if ((parent->left == nullptr) && (parent->right == nullptr)) {
     if (std::rand()%2 == 0)
-      parent->left = node;
+      parent->left = target;
     else
-      parent->right = node;
+      parent->right = target;
 
-    node->parent = parent;
+    target->parent = parent;
   }
 
-  // tentative parent has no left child
+  // parent has no left child
   else if (parent->left == nullptr) {
-    parent->left = node;
-    node->parent = parent;
+    parent->left = target;
+    target->parent = parent;
   }
 
-  // tentative parent has no right child
+  // parent has no right child
   else {
-    parent->right = parent;
-    node->parent = parent;
+    parent->right = target;
+    target->parent = parent;
   }
 } 
 
@@ -538,6 +582,95 @@ void BStar::_delete_node(
     }
   }
 }
+
+
+// simulated annealing
+void BStar::_simulated_annealing(const double initial_temperature) {
+  
+  std::random_device rd;  
+  std::mt19937 gen(rd()); 
+  std::uniform_real_distribution<> dis(0, 1.0);
+  
+  double temperature = initial_temperature;
+
+  std::vector<std::shared_ptr<BNode>> modules_prop;
+  std::vector<std::shared_ptr<BNode>> modules_curr;
+  std::vector<std::shared_ptr<BNode>> modules_best;
+
+  modules_curr = _modules;
+  modules_best = modules_curr;
+
+  size_t area_best = _pack(modules_curr);
+  size_t area_curr = area_best;
+  
+  while(temperature > BSFP_FROZEN_TEMPERATURE) {  
+    for (size_t iter = 0; iter < BSFP_MAX_ITERATIONS_PER_TEMPERATURE; iter++) {
+      modules_prop = modules_curr;
+      _generate_neighbor(modules_prop);
+
+      size_t area_prop = _pack(modules_prop);
+      double cost = area_prop - area_curr;
+
+      if (cost < 0) {
+        modules_curr = modules_prop;
+        area_curr = area_prop;
+         
+        if (area_prop < area_best) {
+          modules_best = modules_prop;
+          area_best = area_prop;
+        }
+
+      }
+
+      else {
+        auto prob = std::exp(-cost/temperature);
+
+        if (prob > dis(gen)) {
+          modules_curr = modules_prop;
+          area_curr = area_prop;
+        }
+      }
+    }
+    temperature *= 0.95;
+  }
+
+  _modules = modules_best;
+}
+
+
+// generate different tree
+void BStar::_generate_neighbor(
+  std::vector<std::shared_ptr<BNode>> modules_prop) {
+
+  std::shared_ptr<BNode> node1 = 
+    modules_prop[std::rand()%(modules_prop.size())];
+  
+  std::shared_ptr<BNode> node2 = 
+    modules_prop[std::rand()%(modules_prop.size())];
+  
+  switch(std::rand()%3) {
+    case 0:
+      _rotate_module(node1);
+      break;
+
+    case 1:
+      while (node1 == node2) {
+        node2 = modules_prop[std::rand()%(modules_prop.size())];  
+      }    
+      _swap_two_nodes(node1, node2);
+      break;
+
+    case 2:
+      while ((node1 == node2) || ((node2->left) && (node2->right)))
+        node2 = modules_prop[std::rand()%(modules_prop.size())];
+      
+      // delete node1 first then insert it back with node2 as the parent
+      _delete_and_insert(node1, node2);
+      break;
+  }
+}
+
+
 
 
 }

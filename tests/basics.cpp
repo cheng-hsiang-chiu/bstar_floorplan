@@ -1132,7 +1132,8 @@ TEST_CASE("delete_node" * doctest::timeout(300)) {
     REQUIRE(modules[5]->right == nullptr);
 
   }
-  
+
+  /*  
   SUBCASE("delete and insert") {
     tester.delete_node(modules[0]);
     
@@ -1145,7 +1146,7 @@ TEST_CASE("delete_node" * doctest::timeout(300)) {
     tester.insert_node(modules[0]);
     tester.dump(std::cout);
   }
-
+  */
   /*
   SUBCASE("node two children") {
     tester.delete_node(modules[0]);
