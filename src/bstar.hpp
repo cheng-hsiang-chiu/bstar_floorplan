@@ -79,17 +79,20 @@ class BStar {
     
     void _delete_and_insert(
       std::shared_ptr<BNode> target,
-      std::shared_ptr<BNode> parent);
+      std::vector<std::shared_ptr<BNode>> modules);
     
     void _delete_node(std::shared_ptr<BNode> node);
     
     void _insert_node(
       std::shared_ptr<BNode> target, 
-      std::shared_ptr<BNode> parent);
+      std::vector<std::shared_ptr<BNode>> modules);
 
     void _simulated_annealing(const double initial_temperature);
 
     void _generate_neighbor(
+      std::vector<std::shared_ptr<BNode>> modules);
+
+    void _dump(
       std::vector<std::shared_ptr<BNode>> modules);
 };
 
@@ -213,8 +216,8 @@ void BStar::_generate_initial_tree() {
 // update contour
 void BStar::_update_contour(
   const std::shared_ptr<BNode> node, const bool is_left) {
-  std::cout << "in update contour\n";
-  std::cout << "node->id = " << node->id << '\n';
+  //std::cout << "in update contour\n";
+  //std::cout << "node->id = " << node->id << '\n';
   if (_contour.empty()) {
     _contour.push_back(node);
     return;
@@ -248,9 +251,9 @@ void BStar::_update_contour(
       _contour.insert(l_idx, node);
     }
 
-    for (auto c : _contour)
-      std::cout << c->id << ' ';
-    std::cout << '\n';
+    //for (auto c : _contour)
+    //  std::cout << c->id << ' ';
+    //std::cout << '\n';
     /* 
     std::cout << "before insert\n";
     std::cout << *l_idx << '\n';
@@ -325,9 +328,11 @@ size_t BStar::_pack(
   for (auto m : modules) {
     if (m->parent == nullptr) {
       _root = m;
-      break;
     }
+    m->llx = 0;
+    m->lly = 0;
   }
+
   _pack_helper(_root);
   
   return _urx * _ury;
@@ -371,7 +376,7 @@ void BStar::optimize() {
   _generate_initial_tree();
 
   //_pack(_root);
-  _simulated_annealing(1000);
+  _simulated_annealing(100000);
 }
 
 
@@ -386,7 +391,8 @@ void BStar::_rotate_module(std::shared_ptr<BNode> node) {
 // operation 2 : swap two nodes
 void BStar::_swap_two_nodes(
   std::shared_ptr<BNode> node1, std::shared_ptr<BNode> node2) {
-
+  //std::cout << "swap " << node1->id << " and " << node2->id << "\n";
+  
   // case 1 : same parent
   if (node1->parent == node2->parent) {
     std::swap(node1->parent->left, node1->parent->right);
@@ -477,23 +483,32 @@ void BStar::_swap_two_nodes(
         n2_old_parent->right = node1; 
     }
   }
+
+  //std::cout << "after swap\n";
+  //dump(std::cout);
+  //std::cout << "------------------\n";
 }
 
 
 // operation 3 : delete one node then insert it back 
 void BStar::_delete_and_insert(
   std::shared_ptr<BNode> target,
-  std::shared_ptr<BNode> parent) {
-
+  std::vector<std::shared_ptr<BNode>> modules) {
+  //std::cout << "delete " << target->id << " and insert after " << parent->id << '\n';
   _delete_node(target);
-  _insert_node(target, parent); 
+  _insert_node(target, modules); 
 }
 
 
 // insert the node to the tree
 void BStar::_insert_node(
   std::shared_ptr<BNode> target,
-  std::shared_ptr<BNode> parent){
+  std::vector<std::shared_ptr<BNode>> modules) {
+  
+  std::shared_ptr<BNode> parent = modules[std::rand()%(modules.size())];
+
+  while ((target == parent) || ((parent->left) && (parent->right)))
+    parent = modules[std::rand()%(modules.size())];
   
   // parent has no children
   if ((parent->left == nullptr) && (parent->right == nullptr)) {
@@ -522,7 +537,8 @@ void BStar::_insert_node(
 // delete one node
 void BStar::_delete_node(
   std::shared_ptr<BNode> node) {
- 
+  //std::cout << "before delete node\n";
+  //dump(std::cout); 
   // case 1 : two children exist
   if (node->left && node->right) {
     while (node->left && node->right) {
@@ -581,6 +597,10 @@ void BStar::_delete_node(
       }
     }
   }
+
+  //std::cout << "after delete node\n";
+  //dump(std::cout);
+  //std::cout << "----------------\n";
 }
 
 
@@ -600,13 +620,23 @@ void BStar::_simulated_annealing(const double initial_temperature) {
   modules_curr = _modules;
   modules_best = modules_curr;
 
+
   size_t area_best = _pack(modules_curr);
+  //dump(std::cout);
+  //std::cin.get();
+  
   size_t area_curr = area_best;
   
   while(temperature > BSFP_FROZEN_TEMPERATURE) {  
     for (size_t iter = 0; iter < BSFP_MAX_ITERATIONS_PER_TEMPERATURE; iter++) {
       modules_prop = modules_curr;
+      //std::cout << "modules proposed before neighbor \n";
+      //_dump(modules_prop);
       _generate_neighbor(modules_prop);
+      //std::cout << "modules proposed after neighbor \n";
+      //_dump(modules_prop);
+      //std::cout << " ------------------\n";
+      //std::cin.get();
 
       size_t area_prop = _pack(modules_prop);
       double cost = area_prop - area_curr;
@@ -642,6 +672,9 @@ void BStar::_simulated_annealing(const double initial_temperature) {
 void BStar::_generate_neighbor(
   std::vector<std::shared_ptr<BNode>> modules_prop) {
 
+  //std::cout << "before generating neighbot\n";
+  //_dump(modules_prop);
+
   std::shared_ptr<BNode> node1 = 
     modules_prop[std::rand()%(modules_prop.size())];
   
@@ -650,10 +683,12 @@ void BStar::_generate_neighbor(
   
   switch(std::rand()%3) {
     case 0:
+      //std::cout << "rotate module\n";
       _rotate_module(node1);
       break;
 
     case 1:
+      //std::cout << "swap two nodes\n";
       while (node1 == node2) {
         node2 = modules_prop[std::rand()%(modules_prop.size())];  
       }    
@@ -661,15 +696,32 @@ void BStar::_generate_neighbor(
       break;
 
     case 2:
-      while ((node1 == node2) || ((node2->left) && (node2->right)))
-        node2 = modules_prop[std::rand()%(modules_prop.size())];
-      
-      // delete node1 first then insert it back with node2 as the parent
-      _delete_and_insert(node1, node2);
+      //std::cout << "delete and insert\n";
+      // delete node1 first then insert it back
+      _delete_and_insert(node1, modules_prop);
       break;
   }
 }
 
+
+
+void BStar::_dump(
+  std::vector<std::shared_ptr<BNode>> modules) {
+  for (auto m : modules) {
+    std::cout << m->id << ", "; 
+    //          << m->llx << ", "
+    //          << m->lly << ", "
+    //          << m->width << ", "
+    //          << m->height << ", ";
+    if (m->parent)
+      std::cout << "parent : " << m->parent->id << ", ";
+    if (m->left)
+      std::cout << "left : " << m->left->id << ", ";
+    if (m->right)
+      std::cout << "right : " << m->right->id << ", ";
+    std::cout << '\n';
+  }
+}
 
 
 

@@ -1130,55 +1130,86 @@ TEST_CASE("delete_node" * doctest::timeout(300)) {
     REQUIRE(modules[5]->parent->id == 0);
     REQUIRE(modules[5]->left == nullptr);
     REQUIRE(modules[5]->right == nullptr);
-
   }
 
-  /*  
-  SUBCASE("delete and insert") {
-    tester.delete_node(modules[0]);
+  SUBCASE("node has two children") {
+    tester.delete_node(modules[1]);
     
     modules = tester.get_modules();
     
-    std::cout << "after deletion\n";
-    tester.dump(std::cout);
-
-    std::cout << "after insertion\n";
-    tester.insert_node(modules[0]);
-    tester.dump(std::cout);
-  }
-  */
-  /*
-  SUBCASE("node two children") {
-    tester.delete_node(modules[0]);
-    
-    modules = tester.get_modules();
-    
+    bool result;
     REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    result = (modules[0]->left->id == 3) || (modules[0]->left->id == 4);
+    REQUIRE(result == true);
+    REQUIRE(modules[0]->right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 2);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1]->parent == nullptr);
+    REQUIRE(modules[1]->left == nullptr);
+    REQUIRE(modules[1]->right == nullptr);
 
-    REQUIRE(modules[2]->parent == nullptr);
-    REQUIRE(modules[2]->left->id == 1);
-    REQUIRE(modules[2]->right->id == 5);
+    REQUIRE(modules[2]->parent->id == 0);
+    REQUIRE(modules[2]->left->id == 5);
+    REQUIRE(modules[2]->right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
+    result = (modules[3]->parent->id == 0) || (modules[3]->parent->id == 4);
+    REQUIRE(result == true);
     REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    result = (modules[3]->right == nullptr) || (modules[3]->right->id == 4);
+    REQUIRE(result == true);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
+    result = (modules[4]->parent->id == 0) || (modules[4]->parent->id == 3);
+    REQUIRE(result == true);
+    result = (modules[4]->left == nullptr) || (modules[4]->left->id == 3);
+    REQUIRE(result == true);
     REQUIRE(modules[4]->right == nullptr);
     
     REQUIRE(modules[5]->parent->id == 2);
     REQUIRE(modules[5]->left == nullptr);
     REQUIRE(modules[5]->right == nullptr);
+
   }
-  */
 }
+
+
+TEST_CASE("delete_node circuit 1" * doctest::timeout(300)) {
+
+  bstar::BStarTester tester;
+
+  tester.open("/home/chiu/bstar_floorplan/circuits/circuit1.txt");
+  tester.generate_initial_tree();
+   
+  std::vector<std::shared_ptr<bstar::BNode>> modules;
+
+  modules = tester.get_modules();
+  
+  SUBCASE("node has two children") {
+    tester.delete_node(modules[0]);
+
+    modules = tester.get_modules();
+    tester.dump(std::cout);
+  }
+}
+
+/*
+TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
+
+  bstar::BStarTester tester;
+
+  tester.open("/home/chiu/bstar_floorplan/circuits/circuit1.txt");
+  tester.generate_initial_tree();
+   
+  std::vector<std::shared_ptr<bstar::BNode>> modules;
+
+  modules = tester.get_modules();
+  
+  SUBCASE("node is a leaf node - 1") {
+    tester.delete_node(modules[0]);
+    tester.insert_node(modules[0], modules[2]);
+
+    tester.dump(std::cout);
+  }
+}
+*/
 
 /*
 TEST_CASE("split_node" * doctest::timeout(300)) {
