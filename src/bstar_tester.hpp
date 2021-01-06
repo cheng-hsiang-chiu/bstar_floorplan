@@ -10,7 +10,7 @@ class BStarTester {
     void update_contour(BNode* node_ptr);
 
     std::vector<BNode*> get_contour() const;
-    std::vector<BNode> get_modules() const;
+    BNode* get_modules();
     
     void open(const std::string input_file); 
     void dump(std::ostream& os);
@@ -46,7 +46,7 @@ std::vector<BNode*> BStarTester::get_contour() const {
 }
 
 
-std::vector<BNode> BStarTester::get_modules() const {
+BNode* BStarTester::get_modules(){
   /*
   bs._modules[0]->parent = bs._modules[1];
   bs._modules[0]->left = bs._modules[3];
@@ -64,7 +64,13 @@ std::vector<BNode> BStarTester::get_modules() const {
   bs._modules[3]->left = nullptr;
   bs._modules[3]->right = nullptr;
   */
-  return bs._modules;
+  std::cout << "bs._modules[" << 0 << "] at " << &((bs._modules)[0]) << '\n';
+  std::cout << "bs._modules[" << 1 << "] at " << &((bs._modules)[1]) << '\n';
+  std::cout << "bs._modules[" << 2 << "] at " << &((bs._modules)[2]) << '\n';
+  std::cout << "bs._modules[" << 3 << "] at " << &((bs._modules)[3]) << '\n';
+  std::cout << "bs._modules[" << 4 << "] at " << &((bs._modules)[4]) << '\n';
+  std::cout << "bs._modules[" << 5 << "] at " << &((bs._modules)[5]) << '\n';
+  return &(bs._modules[0]);
 
 }
 

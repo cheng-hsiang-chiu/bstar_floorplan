@@ -429,19 +429,20 @@ void BStar::_swap_two_nodes(BNode* node1, BNode* node2) {
   // case 1 : same parent
   if (node1->parent == node2->parent) {
     std::cout << "same parent\n";
-    std::cout << node1->parent->left->id << '\n';
-    std::cout << node1->parent->right->id << '\n';
+
+    std::cout << "node1->parent->left = " << node1->parent->left << '\n';
+    std::cout << "node1->parent->right = " << node1->parent->right << '\n';
     
     std::swap(node1->parent->left, node1->parent->right);
-    std::cout << node1->parent->left << '\n';
-    std::cout << node1->parent->right << '\n';
+    //std::cout << node1->parent->left << '\n';
+    //std::cout << node1->parent->right << '\n';
     
     std::swap(node1->left, node2->left);
-    std::cout << node1->left->id << '\n';
-    std::cout << node2->left->id << '\n';
+    //std::cout << node1->left->id << '\n';
+    //std::cout << node2->left->id << '\n';
     
     std::swap(node1->right, node2->right);
-    std::cout << node2->right->id << '\n';
+    //std::cout << node2->right->id << '\n';
 
     if (node1->left)   node1->left->parent = node1;
     if (node1->right)  node1->right->parent = node1;
