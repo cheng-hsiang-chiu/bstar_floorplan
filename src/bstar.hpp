@@ -366,15 +366,17 @@ size_t BStar::_pack(
   _contour.clear();
   _urx = 0;
   _ury = 0;
-
-  for (auto m : modules) {
-    if (m.parent == nullptr) {
-      _root = &(m);
+   
+  for (size_t i = 0; i < modules.size(); ++i) {
+    if (modules[i].parent == nullptr) {
+      _root = &(modules[i]);
     }
 
-    m.llx = 0;
-    m.lly = 0;
+    modules[i].llx = 0;
+    modules[i].lly = 0;
   }
+
+  std::cout << "root id is " << _root->id << '\n';
 
   _pack_helper(_root);
   
@@ -428,7 +430,7 @@ void BStar::optimize() {
 
   std::cout << "initial temperature = " << initial_temperature << '\n';
   _simulated_annealing(initial_temperature);
-
+  _pack(_modules_best);
 }
 
 
@@ -771,7 +773,7 @@ void BStar::_simulated_annealing(const double initial_temperature) {
     temperature *= 0.95;
   }
 
-  //_dump(modules_best);
+  _dump(_modules_best);
   //_modules = modules_best;
 
 }
@@ -867,7 +869,7 @@ double BStar::_calculate_initial_temperature() {
                      avg_area_change / log(BSFP_P);
 
   return init_temperature;
-
+  //return 2;
 }
 
 
