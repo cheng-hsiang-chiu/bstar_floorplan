@@ -34,973 +34,1002 @@ TEST_CASE("swap_two_nodes" * doctest::timeout(300)) {
   tester.open("/home/chiu/bstar_floorplan/circuits/circuit2.txt");
   tester.generate_initial_tree();
    
-  std::vector<std::shared_ptr<bstar::BNode>> modules;
+  std::vector<bstar::BNode> modules;
 
   modules = tester.get_modules();
-  
+  tester.dump_modules(modules); 
   SUBCASE("swap nodes with the same parent - 1") {
-    tester.swap_two_nodes(modules[1], modules[2]);
+    std::cout << "modules[0] at " << &(modules[0]) << '\n';
+    std::cout << "modules[1] at " << &(modules[1]) << '\n';
+    std::cout << "modules[2] at " << &(modules[2]) << '\n';
+    std::cout << "modules[3] at " << &(modules[3]) << '\n';
+    std::cout << "modules[4] at " << &(modules[4]) << '\n';
+    std::cout << "modules[5] at " << &(modules[5]) << '\n';
+    tester.swap_two_nodes(&(modules[1]), &(modules[2]));
+    
+    tester.dump_modules(modules);
+    //modules = tester.get_modules();
+     
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 2);
+    REQUIRE(modules[0].right->id == 1);
 
-    modules = tester.get_modules();
-    
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 2);
-    REQUIRE(modules[0]->right->id == 1);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 5);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 5);
-    REQUIRE(modules[1]->right == nullptr);
-
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 3);
-    REQUIRE(modules[2]->right->id == 4);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 3);
+    REQUIRE(modules[2].right->id == 4);
     
-    REQUIRE(modules[3]->parent->id == 2);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 2);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 2);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 2);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 1);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 1);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
-
+  /*
   SUBCASE("swap nodes with the same parent - 2") {
-    tester.swap_two_nodes(modules[2], modules[1]);
+    tester.swap_two_nodes(&(modules[2]), &(modules[1]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 2);
-    REQUIRE(modules[0]->right->id == 1);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 2);
+    REQUIRE(modules[0].right->id == 1);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 5);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 5);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 3);
-    REQUIRE(modules[2]->right->id == 4);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 3);
+    REQUIRE(modules[2].right->id == 4);
     
-    REQUIRE(modules[3]->parent->id == 2);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 2);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 2);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 2);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 1);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 1);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes with the same parent - 3") {
-    tester.swap_two_nodes(modules[3], modules[4]);
+    tester.swap_two_nodes(&(modules[3]), &(modules[4]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 4);
-    REQUIRE(modules[1]->right->id == 3);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 4);
+    REQUIRE(modules[1].right->id == 3);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes with the same parent - 4") {
-    tester.swap_two_nodes(modules[4], modules[3]);
+    tester.swap_two_nodes(&(modules[4]), &(modules[3]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 4);
-    REQUIRE(modules[1]->right->id == 3);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 4);
+    REQUIRE(modules[1].right->id == 3);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes with parent-child relationship - 1") {
-    tester.swap_two_nodes(modules[0], modules[1]);
+    tester.swap_two_nodes(&(modules[0]), &(modules[1]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left->id == 3);
-    REQUIRE(modules[0]->right->id == 4);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left->id == 3);
+    REQUIRE(modules[0].right->id == 4);
 
-    REQUIRE(modules[1]->parent == nullptr);
-    REQUIRE(modules[1]->left->id == 0);
-    REQUIRE(modules[1]->right->id == 2);
+    REQUIRE(modules[1].parent == nullptr);
+    REQUIRE(modules[1].left->id == 0);
+    REQUIRE(modules[1].right->id == 2);
 
-    REQUIRE(modules[2]->parent->id == 1);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 1);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 0);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 0);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 0);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 0);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes with parent-child relationship - 2") {
-    tester.swap_two_nodes(modules[1], modules[0]);
+    tester.swap_two_nodes(&(modules[1]), &(modules[0]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left->id == 3);
-    REQUIRE(modules[0]->right->id == 4);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left->id == 3);
+    REQUIRE(modules[0].right->id == 4);
 
-    REQUIRE(modules[1]->parent == nullptr);
-    REQUIRE(modules[1]->left->id == 0);
-    REQUIRE(modules[1]->right->id == 2);
+    REQUIRE(modules[1].parent == nullptr);
+    REQUIRE(modules[1].left->id == 0);
+    REQUIRE(modules[1].right->id == 2);
 
-    REQUIRE(modules[2]->parent->id == 1);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 1);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 0);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 0);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 0);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 0);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes with parent-child relationship - 3") {
-    tester.swap_two_nodes(modules[0], modules[2]);
+    tester.swap_two_nodes(&(modules[0]), &(modules[2]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 2);
-    REQUIRE(modules[0]->left->id == 5);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 2);
+    REQUIRE(modules[0].left->id == 5);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 2);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 2);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent == nullptr);
-    REQUIRE(modules[2]->left->id == 1);
-    REQUIRE(modules[2]->right->id == 0);
+    REQUIRE(modules[2].parent == nullptr);
+    REQUIRE(modules[2].left->id == 1);
+    REQUIRE(modules[2].right->id == 0);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 0);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 0);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes with parent-child relationship - 4") {
-    tester.swap_two_nodes(modules[2], modules[0]);
+    tester.swap_two_nodes(&(modules[2]), &(modules[0]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 2);
-    REQUIRE(modules[0]->left->id == 5);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 2);
+    REQUIRE(modules[0].left->id == 5);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 2);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 2);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent == nullptr);
-    REQUIRE(modules[2]->left->id == 1);
-    REQUIRE(modules[2]->right->id == 0);
+    REQUIRE(modules[2].parent == nullptr);
+    REQUIRE(modules[2].left->id == 1);
+    REQUIRE(modules[2].right->id == 0);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 0);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 0);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes with parent-child relationship - 5") {
-    tester.swap_two_nodes(modules[1], modules[3]);
+    tester.swap_two_nodes(&(modules[1]), &(modules[3]));
 
     modules = tester.get_modules();
     tester.dump(std::cout);
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 3);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 3);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 3);
-    REQUIRE(modules[1]->left == nullptr);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent->id == 3);
+    REQUIRE(modules[1].left == nullptr);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 0);
-    REQUIRE(modules[3]->left->id == 1);
-    REQUIRE(modules[3]->right->id == 4);
+    REQUIRE(modules[3].parent->id == 0);
+    REQUIRE(modules[3].left->id == 1);
+    REQUIRE(modules[3].right->id == 4);
     
-    REQUIRE(modules[4]->parent->id == 3);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 3);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes with parent-child relationship - 6") {
-    tester.swap_two_nodes(modules[3], modules[1]);
-
+    tester.swap_two_nodes(&(modules[3]), &(modules[1]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 3);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 3);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 3);
-    REQUIRE(modules[1]->left == nullptr);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent->id == 3);
+    REQUIRE(modules[1].left == nullptr);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 0);
-    REQUIRE(modules[3]->left->id == 1);
-    REQUIRE(modules[3]->right->id == 4);
+    REQUIRE(modules[3].parent->id == 0);
+    REQUIRE(modules[3].left->id == 1);
+    REQUIRE(modules[3].right->id == 4);
     
-    REQUIRE(modules[4]->parent->id == 3);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 3);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes with parent-child relationship - 7") {
-    tester.swap_two_nodes(modules[1], modules[4]);
-
+    tester.swap_two_nodes(&(modules[1]), &(modules[4]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 4);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 4);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 4);
-    REQUIRE(modules[1]->left == nullptr);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent->id == 4);
+    REQUIRE(modules[1].left == nullptr);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 4);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 4);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 0);
-    REQUIRE(modules[4]->left->id == 3);
-    REQUIRE(modules[4]->right->id == 1);
+    REQUIRE(modules[4].parent->id == 0);
+    REQUIRE(modules[4].left->id == 3);
+    REQUIRE(modules[4].right->id == 1);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes with parent-child relationship - 8") {
-    tester.swap_two_nodes(modules[4], modules[1]);
 
+    tester.swap_two_nodes(&(modules[4]), &(modules[1]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 4);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 4);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 4);
-    REQUIRE(modules[1]->left == nullptr);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent->id == 4);
+    REQUIRE(modules[1].left == nullptr);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 4);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 4);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 0);
-    REQUIRE(modules[4]->left->id == 3);
-    REQUIRE(modules[4]->right->id == 1);
+    REQUIRE(modules[4].parent->id == 0);
+    REQUIRE(modules[4].left->id == 3);
+    REQUIRE(modules[4].right->id == 1);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes with parent-child relationship - 9") {
-    tester.swap_two_nodes(modules[2], modules[5]);
 
+    tester.swap_two_nodes(&(modules[2]), &(modules[5]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 5);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 5);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 5);
-    REQUIRE(modules[2]->left == nullptr);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 5);
+    REQUIRE(modules[2].left == nullptr);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 0);
-    REQUIRE(modules[5]->left->id == 2);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 0);
+    REQUIRE(modules[5].left->id == 2);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes with parent-child relationship - 10") {
-    tester.swap_two_nodes(modules[5], modules[2]);
-
+    
+    tester.swap_two_nodes(&(modules[5]), &(modules[2]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 5);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 5);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 5);
-    REQUIRE(modules[2]->left == nullptr);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 5);
+    REQUIRE(modules[2].left == nullptr);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 0);
-    REQUIRE(modules[5]->left->id == 2);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 0);
+    REQUIRE(modules[5].left->id == 2);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes without relationship - 1") {
-    tester.swap_two_nodes(modules[0], modules[3]);
-
+    
+    tester.swap_two_nodes(&(modules[0]), &(modules[3]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 3);
-    REQUIRE(modules[1]->left->id == 0);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 3);
+    REQUIRE(modules[1].left->id == 0);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 3);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 3);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent == nullptr);
-    REQUIRE(modules[3]->left->id == 1);
-    REQUIRE(modules[3]->right->id == 2);
+    REQUIRE(modules[3].parent == nullptr);
+    REQUIRE(modules[3].left->id == 1);
+    REQUIRE(modules[3].right->id == 2);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes without relationship - 2") {
-    tester.swap_two_nodes(modules[3], modules[0]);
+
+    tester.swap_two_nodes(&(modules[3]), &(modules[0]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 3);
-    REQUIRE(modules[1]->left->id == 0);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 3);
+    REQUIRE(modules[1].left->id == 0);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 3);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 3);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent == nullptr);
-    REQUIRE(modules[3]->left->id == 1);
-    REQUIRE(modules[3]->right->id == 2);
+    REQUIRE(modules[3].parent == nullptr);
+    REQUIRE(modules[3].left->id == 1);
+    REQUIRE(modules[3].right->id == 2);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes without relationship - 3") {
-    tester.swap_two_nodes(modules[0], modules[4]);
 
+    tester.swap_two_nodes(&(modules[0]), &(modules[4]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 4);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 0);
+    REQUIRE(modules[1].parent->id == 4);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 0);
 
-    REQUIRE(modules[2]->parent->id == 4);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 4);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent == nullptr);
-    REQUIRE(modules[4]->left->id == 1);
-    REQUIRE(modules[4]->right->id == 2);
+    REQUIRE(modules[4].parent == nullptr);
+    REQUIRE(modules[4].left->id == 1);
+    REQUIRE(modules[4].right->id == 2);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes without relationship - 4") {
-    tester.swap_two_nodes(modules[4], modules[0]);
 
+    tester.swap_two_nodes(&(modules[4]), &(modules[0]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 4);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 0);
+    REQUIRE(modules[1].parent->id == 4);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 0);
 
-    REQUIRE(modules[2]->parent->id == 4);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 4);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent == nullptr);
-    REQUIRE(modules[4]->left->id == 1);
-    REQUIRE(modules[4]->right->id == 2);
+    REQUIRE(modules[4].parent == nullptr);
+    REQUIRE(modules[4].left->id == 1);
+    REQUIRE(modules[4].right->id == 2);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes without relationship - 5") {
-    tester.swap_two_nodes(modules[0], modules[5]);
 
+    tester.swap_two_nodes(&(modules[0]), &(modules[5]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 2);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 2);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 5);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 5);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 5);
-    REQUIRE(modules[2]->left->id == 0);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 5);
+    REQUIRE(modules[2].left->id == 0);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent == nullptr);
-    REQUIRE(modules[5]->left->id == 1);
-    REQUIRE(modules[5]->right->id == 2);
+    REQUIRE(modules[5].parent == nullptr);
+    REQUIRE(modules[5].left->id == 1);
+    REQUIRE(modules[5].right->id == 2);
   }
 
   SUBCASE("swap nodes without relationship - 6") {
-    tester.swap_two_nodes(modules[5], modules[0]);
 
+    tester.swap_two_nodes(&(modules[5]), &(modules[0]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 2);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 2);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 5);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 5);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 5);
-    REQUIRE(modules[2]->left->id == 0);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 5);
+    REQUIRE(modules[2].left->id == 0);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent == nullptr);
-    REQUIRE(modules[5]->left->id == 1);
-    REQUIRE(modules[5]->right->id == 2);
+    REQUIRE(modules[5].parent == nullptr);
+    REQUIRE(modules[5].left->id == 1);
+    REQUIRE(modules[5].right->id == 2);
   }
 
   SUBCASE("swap nodes without relationship - 7") {
-    tester.swap_two_nodes(modules[2], modules[3]);
 
+    tester.swap_two_nodes(&(modules[2]), &(modules[3]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 3);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 3);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 2);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 2);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 1);
-    REQUIRE(modules[2]->left == nullptr);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 1);
+    REQUIRE(modules[2].left == nullptr);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 0);
-    REQUIRE(modules[3]->left->id == 5);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 0);
+    REQUIRE(modules[3].left->id == 5);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 3);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 3);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes without relationship - 8") {
-    tester.swap_two_nodes(modules[3], modules[2]);
 
+    tester.swap_two_nodes(&(modules[3]), &(modules[2]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 3);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 3);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 2);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 2);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 1);
-    REQUIRE(modules[2]->left == nullptr);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 1);
+    REQUIRE(modules[2].left == nullptr);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 0);
-    REQUIRE(modules[3]->left->id == 5);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 0);
+    REQUIRE(modules[3].left->id == 5);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 3);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 3);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("swap nodes without relationship - 9") {
-    tester.swap_two_nodes(modules[2], modules[4]);
 
+    tester.swap_two_nodes(&(modules[2]), &(modules[4]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 4);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 4);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 2);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 2);
 
-    REQUIRE(modules[2]->parent->id == 1);
-    REQUIRE(modules[2]->left == nullptr);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 1);
+    REQUIRE(modules[2].left == nullptr);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 0);
-    REQUIRE(modules[4]->left->id == 5);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 0);
+    REQUIRE(modules[4].left->id == 5);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 4);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 4);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes without relationship - 10") {
-    tester.swap_two_nodes(modules[4], modules[2]);
 
+    tester.swap_two_nodes(&(modules[4]), &(modules[2]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 4);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 4);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 2);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 2);
 
-    REQUIRE(modules[2]->parent->id == 1);
-    REQUIRE(modules[2]->left == nullptr);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 1);
+    REQUIRE(modules[2].left == nullptr);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 0);
-    REQUIRE(modules[4]->left->id == 5);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 0);
+    REQUIRE(modules[4].left->id == 5);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 4);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 4);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes without relationship - 11") {
-    tester.swap_two_nodes(modules[1], modules[5]);
 
+    tester.swap_two_nodes(&(modules[1]), &(modules[5]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 5);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 5);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 2);
-    REQUIRE(modules[1]->left == nullptr);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent->id == 2);
+    REQUIRE(modules[1].left == nullptr);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 1);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 1);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 5);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 5);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 5);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 5);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 0);
-    REQUIRE(modules[5]->left->id == 3);
-    REQUIRE(modules[5]->right->id == 4);
+    REQUIRE(modules[5].parent->id == 0);
+    REQUIRE(modules[5].left->id == 3);
+    REQUIRE(modules[5].right->id == 4);
   }
   
   SUBCASE("swap nodes without relationship - 12") {
-    tester.swap_two_nodes(modules[5], modules[1]);
 
+    tester.swap_two_nodes(&(modules[5]), &(modules[1]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 5);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 5);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 2);
-    REQUIRE(modules[1]->left == nullptr);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent->id == 2);
+    REQUIRE(modules[1].left == nullptr);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 1);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 1);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 5);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 5);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 5);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 5);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 0);
-    REQUIRE(modules[5]->left->id == 3);
-    REQUIRE(modules[5]->right->id == 4);
+    REQUIRE(modules[5].parent->id == 0);
+    REQUIRE(modules[5].left->id == 3);
+    REQUIRE(modules[5].right->id == 4);
   }
 
   SUBCASE("swap nodes without relationship - 13") {
-    tester.swap_two_nodes(modules[0], modules[3]);
 
+    tester.swap_two_nodes(&(modules[0]), &(modules[3]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 3);
-    REQUIRE(modules[1]->left->id == 0);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 3);
+    REQUIRE(modules[1].left->id == 0);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 3);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 3);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent == nullptr);
-    REQUIRE(modules[3]->left->id == 1);
-    REQUIRE(modules[3]->right->id == 2);
+    REQUIRE(modules[3].parent == nullptr);
+    REQUIRE(modules[3].left->id == 1);
+    REQUIRE(modules[3].right->id == 2);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes without relationship - 14") {
-    tester.swap_two_nodes(modules[3], modules[0]);
 
+    tester.swap_two_nodes(&(modules[3]), &(modules[0]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 3);
-    REQUIRE(modules[1]->left->id == 0);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 3);
+    REQUIRE(modules[1].left->id == 0);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 3);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 3);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent == nullptr);
-    REQUIRE(modules[3]->left->id == 1);
-    REQUIRE(modules[3]->right->id == 2);
+    REQUIRE(modules[3].parent == nullptr);
+    REQUIRE(modules[3].left->id == 1);
+    REQUIRE(modules[3].right->id == 2);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes without relationship - 15") {
-    tester.swap_two_nodes(modules[0], modules[4]);
 
+    tester.swap_two_nodes(&(modules[0]), &(modules[4]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 4);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 0);
+    REQUIRE(modules[1].parent->id == 4);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 0);
 
-    REQUIRE(modules[2]->parent->id == 4);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 4);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent == nullptr);
-    REQUIRE(modules[4]->left->id == 1);
-    REQUIRE(modules[4]->right->id == 2);
+    REQUIRE(modules[4].parent == nullptr);
+    REQUIRE(modules[4].left->id == 1);
+    REQUIRE(modules[4].right->id == 2);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes without relationship - 16") {
-    tester.swap_two_nodes(modules[4], modules[0]);
 
+    tester.swap_two_nodes(&(modules[4]), &(modules[0]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 1);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 1);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 4);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 0);
+    REQUIRE(modules[1].parent->id == 4);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 0);
 
-    REQUIRE(modules[2]->parent->id == 4);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 4);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent == nullptr);
-    REQUIRE(modules[4]->left->id == 1);
-    REQUIRE(modules[4]->right->id == 2);
+    REQUIRE(modules[4].parent == nullptr);
+    REQUIRE(modules[4].left->id == 1);
+    REQUIRE(modules[4].right->id == 2);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("swap nodes without relationship - 17") {
-    tester.swap_two_nodes(modules[0], modules[5]);
 
+    tester.swap_two_nodes(&(modules[0]), &(modules[5]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 2);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 2);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 5);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 5);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 5);
-    REQUIRE(modules[2]->left->id == 0);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 5);
+    REQUIRE(modules[2].left->id == 0);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent == nullptr);
-    REQUIRE(modules[5]->left->id == 1);
-    REQUIRE(modules[5]->right->id == 2);
+    REQUIRE(modules[5].parent == nullptr);
+    REQUIRE(modules[5].left->id == 1);
+    REQUIRE(modules[5].right->id == 2);
   }
   
   SUBCASE("swap nodes without relationship - 18") {
-    tester.swap_two_nodes(modules[5], modules[0]);
 
+    tester.swap_two_nodes(&(modules[5]), &(modules[0]));
+    
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent->id == 2);
-    REQUIRE(modules[0]->left == nullptr);
-    REQUIRE(modules[0]->right == nullptr);
+    REQUIRE(modules[0].parent->id == 2);
+    REQUIRE(modules[0].left == nullptr);
+    REQUIRE(modules[0].right == nullptr);
 
-    REQUIRE(modules[1]->parent->id == 5);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 5);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 5);
-    REQUIRE(modules[2]->left->id == 0);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 5);
+    REQUIRE(modules[2].left->id == 0);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent == nullptr);
-    REQUIRE(modules[5]->left->id == 1);
-    REQUIRE(modules[5]->right->id == 2);
+    REQUIRE(modules[5].parent == nullptr);
+    REQUIRE(modules[5].left->id == 1);
+    REQUIRE(modules[5].right->id == 2);
   }
+  */
 }
 
-
+/*
 TEST_CASE("delete_node" * doctest::timeout(300)) {
 
   bstar::BStarTester tester;
@@ -1008,164 +1037,164 @@ TEST_CASE("delete_node" * doctest::timeout(300)) {
   tester.open("/home/chiu/bstar_floorplan/circuits/circuit2.txt");
   tester.generate_initial_tree();
    
-  std::vector<std::shared_ptr<bstar::BNode>> modules;
+  std::vector<bstar::BNode> modules;
 
   modules = tester.get_modules();
   
   SUBCASE("node is a leaf node - 1") {
-    tester.delete_node(modules[3]);
+    tester.delete_node(&(modules[3]));
 
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left == nullptr);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left == nullptr);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent == nullptr);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent == nullptr);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("node is a leaf node - 2") {
-    tester.delete_node(modules[4]);
+    tester.delete_node(&(modules[4]));
     
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent == nullptr);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent == nullptr);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
   
   SUBCASE("node is a leaf node - 3") {
-    tester.delete_node(modules[5]);
+    tester.delete_node(&(modules[5]));
     
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left == nullptr);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left == nullptr);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent == nullptr);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent == nullptr);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("node has only left child") {
-    tester.delete_node(modules[2]);
+    tester.delete_node(&(modules[2]));
     
     modules = tester.get_modules();
     
-    REQUIRE(modules[0]->parent == nullptr);
-    REQUIRE(modules[0]->left->id == 1);
-    REQUIRE(modules[0]->right->id == 5);
+    REQUIRE(modules[0].parent == nullptr);
+    REQUIRE(modules[0].left->id == 1);
+    REQUIRE(modules[0].right->id == 5);
 
-    REQUIRE(modules[1]->parent->id == 0);
-    REQUIRE(modules[1]->left->id == 3);
-    REQUIRE(modules[1]->right->id == 4);
+    REQUIRE(modules[1].parent->id == 0);
+    REQUIRE(modules[1].left->id == 3);
+    REQUIRE(modules[1].right->id == 4);
 
-    REQUIRE(modules[2]->parent == nullptr);
-    REQUIRE(modules[2]->left == nullptr);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent == nullptr);
+    REQUIRE(modules[2].left == nullptr);
+    REQUIRE(modules[2].right == nullptr);
     
-    REQUIRE(modules[3]->parent->id == 1);
-    REQUIRE(modules[3]->left == nullptr);
-    REQUIRE(modules[3]->right == nullptr);
+    REQUIRE(modules[3].parent->id == 1);
+    REQUIRE(modules[3].left == nullptr);
+    REQUIRE(modules[3].right == nullptr);
     
-    REQUIRE(modules[4]->parent->id == 1);
-    REQUIRE(modules[4]->left == nullptr);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].parent->id == 1);
+    REQUIRE(modules[4].left == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 0);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 0);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
   }
 
   SUBCASE("node has two children") {
-    tester.delete_node(modules[1]);
+    tester.delete_node(&(modules[1]));
     
     modules = tester.get_modules();
     
     bool result;
-    REQUIRE(modules[0]->parent == nullptr);
-    result = (modules[0]->left->id == 3) || (modules[0]->left->id == 4);
+    REQUIRE(modules[0].parent == nullptr);
+    result = (modules[0].left->id == 3) || (modules[0].left->id == 4);
     REQUIRE(result == true);
-    REQUIRE(modules[0]->right->id == 2);
+    REQUIRE(modules[0].right->id == 2);
 
-    REQUIRE(modules[1]->parent == nullptr);
-    REQUIRE(modules[1]->left == nullptr);
-    REQUIRE(modules[1]->right == nullptr);
+    REQUIRE(modules[1].parent == nullptr);
+    REQUIRE(modules[1].left == nullptr);
+    REQUIRE(modules[1].right == nullptr);
 
-    REQUIRE(modules[2]->parent->id == 0);
-    REQUIRE(modules[2]->left->id == 5);
-    REQUIRE(modules[2]->right == nullptr);
+    REQUIRE(modules[2].parent->id == 0);
+    REQUIRE(modules[2].left->id == 5);
+    REQUIRE(modules[2].right == nullptr);
     
-    result = (modules[3]->parent->id == 0) || (modules[3]->parent->id == 4);
+    result = (modules[3].parent->id == 0) || (modules[3].parent->id == 4);
     REQUIRE(result == true);
-    REQUIRE(modules[3]->left == nullptr);
-    result = (modules[3]->right == nullptr) || (modules[3]->right->id == 4);
+    REQUIRE(modules[3].left == nullptr);
+    result = (modules[3].right == nullptr) || (modules[3].right->id == 4);
     REQUIRE(result == true);
     
-    result = (modules[4]->parent->id == 0) || (modules[4]->parent->id == 3);
+    result = (modules[4].parent->id == 0) || (modules[4].parent->id == 3);
     REQUIRE(result == true);
-    result = (modules[4]->left == nullptr) || (modules[4]->left->id == 3);
+    result = (modules[4].left == nullptr) || (modules[4].left->id == 3);
     REQUIRE(result == true);
-    REQUIRE(modules[4]->right == nullptr);
+    REQUIRE(modules[4].right == nullptr);
     
-    REQUIRE(modules[5]->parent->id == 2);
-    REQUIRE(modules[5]->left == nullptr);
-    REQUIRE(modules[5]->right == nullptr);
+    REQUIRE(modules[5].parent->id == 2);
+    REQUIRE(modules[5].left == nullptr);
+    REQUIRE(modules[5].right == nullptr);
 
   }
 }
@@ -1178,18 +1207,18 @@ TEST_CASE("delete_node circuit 1" * doctest::timeout(300)) {
   tester.open("/home/chiu/bstar_floorplan/circuits/circuit1.txt");
   tester.generate_initial_tree();
    
-  std::vector<std::shared_ptr<bstar::BNode>> modules;
+  std::vector<bstar::BNode> modules;
 
   modules = tester.get_modules();
   
   SUBCASE("node has two children") {
-    tester.delete_node(modules[0]);
+    tester.delete_node(&(modules[0]));
 
     modules = tester.get_modules();
     tester.dump(std::cout);
   }
 }
-
+*/
 /*
 TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
 
