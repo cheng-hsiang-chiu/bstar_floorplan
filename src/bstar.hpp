@@ -50,7 +50,9 @@ class BStar {
   private:
     std::string _input_file;
     
-    std::vector<BNode> _modules;
+    std::vector<BNode> _modules_curr;
+    std::vector<BNode> _modules_best;
+    std::vector<BNode> _modules_prop;
     
     // _contour stores modules which define the contour
     std::vector<BNode*> _contour;
@@ -90,6 +92,9 @@ class BStar {
     void _dump(const std::vector<BNode> modules) const;
 
     double _calculate_initial_temperature();
+
+    void _deep_copy_modules(std::vector<BNode>& source, 
+                            std::vector<BNode>& destination);
 };
 
 
@@ -125,7 +130,9 @@ void BStar::open(const std::string input_file) {
     node.width = width;
     node.height = height; 
 
-    _modules.push_back(node);
+    _modules_curr.push_back(node);
+    _modules_prop.push_back(node);
+    _modules_best.push_back(node);
   }
 
   std::cout << "successfully open circuit\n";
@@ -136,21 +143,21 @@ void BStar::open(const std::string input_file) {
 // dump floorplan to console
 void BStar::dump(std::ostream& os) const {
 
-  for (size_t i = 0; i < _modules.size(); ++i) {
-    os << _modules[i].id << ' '
-       << _modules[i].llx << ' '
-       << _modules[i].lly << ' '
-       << _modules[i].width << ' '
-       << _modules[i].height << ' ';
+  for (size_t i = 0; i < _modules_best.size(); ++i) {
+    os << _modules_best[i].id << ' '
+       << _modules_best[i].llx << ' '
+       << _modules_best[i].lly << ' '
+       << _modules_best[i].width << ' '
+       << _modules_best[i].height << ' ';
     
-    if (_modules[i].parent)
-      os << " ,parent = " << _modules[i].parent->id << ' ';
+    if (_modules_best[i].parent)
+      os << " ,parent = " << _modules_best[i].parent->id << ' ';
 
-    if (_modules[i].left)
-      os << " ,left = " << _modules[i].left->id << ' ';
+    if (_modules_best[i].left)
+      os << " ,left = " << _modules_best[i].left->id << ' ';
 
-    if (_modules[i].right)
-      os << " ,right = " << _modules[i].right->id << ' ';
+    if (_modules_best[i].right)
+      os << " ,right = " << _modules_best[i].right->id << ' ';
     
     os << '\n';
   }
@@ -174,7 +181,7 @@ void BStar::dump_json(std::string output_file) const {
 
   // generate json output 
   outfile << "{\"circuit\":\""    << _input_file << "\""
-          << ",\"block_number\":" << _modules.size()
+          << ",\"block_number\":" << _modules_best.size()
           << ",\"llx\":0"
           << ",\"lly\":0"
           << ",\"urx\":"  << _urx
@@ -183,13 +190,13 @@ void BStar::dump_json(std::string output_file) const {
           << ",\"coordinates\":"
           << "[";
 
-  for(size_t i = 0; i < _modules.size(); ++i) {
-    outfile << "{\"idx\":"    << _modules[i].id
-            << ",\"llx\":"    << _modules[i].llx
-            << ",\"lly\":"    << _modules[i].lly
-            << ",\"width\":"  << _modules[i].width
-            << ",\"height\":" << _modules[i].height;
-    if(i == _modules.size()-1)
+  for(size_t i = 0; i < _modules_best.size(); ++i) {
+    outfile << "{\"idx\":"    << _modules_best[i].id
+            << ",\"llx\":"    << _modules_best[i].llx
+            << ",\"lly\":"    << _modules_best[i].lly
+            << ",\"width\":"  << _modules_best[i].width
+            << ",\"height\":" << _modules_best[i].height;
+    if(i == _modules_best.size()-1)
       outfile << "}";
     else
       outfile << "},";
@@ -203,15 +210,27 @@ void BStar::dump_json(std::string output_file) const {
 // generate an initial ordered binary tree
 void BStar::_generate_initial_tree() {
   
-  for (size_t i = 0; i < _modules.size(); ++i) {
-    if (i*2+1 < _modules.size()) {
-      _modules[i].left = &(_modules[i*2+1]);
-      _modules[i*2+1].parent = &(_modules[i]);
+  for (size_t i = 0; i < _modules_curr.size(); ++i) {
+    if (i*2+1 < _modules_curr.size()) {
+      _modules_curr[i].left = &(_modules_curr[i*2+1]);
+      _modules_curr[i*2+1].parent = &(_modules_curr[i]);
+      
+      _modules_prop[i].left = &(_modules_prop[i*2+1]);
+      _modules_prop[i*2+1].parent = &(_modules_prop[i]);
+      
+      _modules_best[i].left = &(_modules_best[i*2+1]);
+      _modules_best[i*2+1].parent = &(_modules_best[i]);
     }
 
-    if (i*2+2 < _modules.size()) {
-      _modules[i].right = &(_modules[i*2+2]);
-      _modules[i*2+2].parent = &(_modules[i]);
+    if (i*2+2 < _modules_curr.size()) {
+      _modules_curr[i].right = &(_modules_curr[i*2+2]);
+      _modules_curr[i*2+2].parent = &(_modules_curr[i]);
+      
+      _modules_prop[i].right = &(_modules_prop[i*2+2]);
+      _modules_prop[i*2+2].parent = &(_modules_prop[i]);
+      
+      _modules_best[i].right = &(_modules_best[i*2+2]);
+      _modules_best[i*2+2].parent = &(_modules_best[i]);
     }     
   }
   /*
@@ -227,7 +246,6 @@ void BStar::_generate_initial_tree() {
     std::cout << '\n';
   }
   */
-  _root = &(_modules[0]);  
 
 }
 
@@ -400,12 +418,17 @@ void BStar::_pack_helper(BNode* node) {
 
 // optimize the floor plan
 void BStar::optimize() {
+
   _generate_initial_tree();
 
-  //_pack(_root);
   double initial_temperature = _calculate_initial_temperature();
+  
+  _deep_copy_modules(_modules_prop, _modules_curr);
+  _deep_copy_modules(_modules_prop, _modules_best);
+
   std::cout << "initial temperature = " << initial_temperature << '\n';
   _simulated_annealing(initial_temperature);
+
 }
 
 
@@ -650,6 +673,33 @@ void BStar::_delete_node(BNode* node) {
 }
 
 
+// deep copy modules 
+void BStar::_deep_copy_modules(
+  std::vector<BNode>& source,
+  std::vector<BNode>& destination) {
+
+  destination = source;
+
+  for (size_t i = 0; i < destination.size(); ++i) {
+    if (destination[i].parent) {
+      destination[i].parent = 
+        &destination[std::distance(&source[0], source[i].parent)];      
+    }
+
+    if (destination[i].left) {
+      destination[i].left = 
+        &destination[std::distance(&source[0], source[i].left)];      
+    }
+
+    if (destination[i].right) {
+      destination[i].right = 
+        &destination[std::distance(&source[0], source[i].right)];      
+    }
+  }
+  
+}
+
+
 // simulated annealing
 void BStar::_simulated_annealing(const double initial_temperature) {
   
@@ -659,15 +709,15 @@ void BStar::_simulated_annealing(const double initial_temperature) {
   
   double temperature = initial_temperature;
 
-  std::vector<BNode> modules_prop;
-  std::vector<BNode> modules_curr;
-  std::vector<BNode> modules_best;
+  //std::vector<BNode> modules_prop;
+  //std::vector<BNode> modules_curr;
+  //std::vector<BNode> modules_best;
 
-  modules_curr = _modules;
-  modules_best = modules_curr;
+  //modules_curr = _modules;
+  //modules_best = modules_curr;
 
 
-  size_t area_best = _pack(modules_curr);
+  size_t area_best = _pack(_modules_curr);
   //dump(std::cout);
   //std::cin.get();
   
@@ -675,18 +725,18 @@ void BStar::_simulated_annealing(const double initial_temperature) {
   
   while(temperature > BSFP_FROZEN_TEMPERATURE) {  
     for (size_t iter = 0; iter < BSFP_MAX_ITERATIONS_PER_TEMPERATURE; iter++) {
-      modules_prop = modules_curr;
+      _deep_copy_modules(_modules_curr, _modules_prop);
       //std::cout << "modules proposed before neighbor \n";
-      std::cout << "modules_curr = " << '\n';
-      _dump(modules_curr);
-      _generate_neighbor(modules_prop);
+      //std::cout << "_modules_curr = " << '\n';
+      //_dump(modules_curr);
+      _generate_neighbor(_modules_prop);
       //std::cout << "modules proposed after neighbor \n";
-      std::cout << "modules_prop = " << '\n';
-      _dump(modules_prop);
+      //std::cout << "modules_prop = " << '\n';
+      //_dump(modules_prop);
       //std::cout << " ------------------\n";
       //std::cin.get();
 
-      size_t area_prop = _pack(modules_prop);
+      size_t area_prop = _pack(_modules_prop);
 
       std::cout << "area_curr = " << area_curr << " , area_prop = " << area_prop << '\n';
       double cost = area_prop < area_curr ? 
@@ -694,12 +744,13 @@ void BStar::_simulated_annealing(const double initial_temperature) {
 
       //std::cout << "cost = " << cost << '\n';
       if (cost < 0) {
-        modules_curr = modules_prop;
+        _deep_copy_modules(_modules_prop, _modules_curr);
+        //modules_curr = modules_prop;
         area_curr = area_prop;
          
         if (area_prop < area_best) {
           std::cout << "best solution with area = " << _urx << "*" << _ury << " = " << area_best << "\n";
-          modules_best = modules_prop;
+          _deep_copy_modules(_modules_prop, _modules_best);
           area_best = area_prop;
         }
 
@@ -711,8 +762,8 @@ void BStar::_simulated_annealing(const double initial_temperature) {
 
         if (prob > dis(gen)) {
           std::cout << "take worse solution with area = " << _urx << "*" << _ury << " = " << area_prop << "\n";
-          _dump(modules_prop);
-          modules_curr = modules_prop;
+          _dump(_modules_prop);
+          _deep_copy_modules(_modules_prop, _modules_curr);
           area_curr = area_prop;
         }
       }
@@ -720,8 +771,8 @@ void BStar::_simulated_annealing(const double initial_temperature) {
     temperature *= 0.95;
   }
 
-  _dump(modules_best);
-  _modules = modules_best;
+  //_dump(modules_best);
+  //_modules = modules_best;
 
 }
 
@@ -732,28 +783,28 @@ void BStar::_generate_neighbor(std::vector<BNode>& modules) {
   //std::cout << "before generating neighbot\n";
   //_dump(modules_prop);
 
-  BNode* node1_ptr = &(modules[std::rand()%(modules.size())]);
+  BNode* node1 = &(modules[std::rand()%(modules.size())]);
   
-  BNode* node2_ptr = &(modules[std::rand()%(modules.size())]);
+  BNode* node2 = &(modules[std::rand()%(modules.size())]);
   
   switch(std::rand()%3) {
     case 0:
       //std::cout << "rotate module\n";
-      _rotate_module(node1_ptr);
+      _rotate_module(node1);
       break;
 
     case 1:
       //std::cout << "swap two nodes\n";
-      while (node1_ptr == node2_ptr) {
-        node2_ptr = &(modules[std::rand()%(modules.size())]);  
+      while (node1 == node2) {
+        node2 = &(modules[std::rand()%(modules.size())]);  
       }    
-      _swap_two_nodes(node1_ptr, node2_ptr);
+      _swap_two_nodes(node1, node2);
       break;
 
     case 2:
       //std::cout << "delete and insert\n";
       // delete node1 first then insert it back
-      _delete_and_insert(node1_ptr, modules);
+      _delete_and_insert(node1, modules);
       break;
   }
 
@@ -788,16 +839,16 @@ double BStar::_calculate_initial_temperature() {
   double total_area_change = 0.0;
   double delta_area, avg_area_change, init_temperature;
 
-  std::vector<BNode> modules_curr = _modules;
-  std::vector<BNode> modules_prop = _modules;
+  //std::vector<BNode> modules_curr = _modules;
+  //std::vector<BNode> modules_prop = _modules;
 
-  size_t area_curr = _pack(modules_curr);
+  size_t area_curr = _pack(_modules_curr);
   size_t area_prop;
 
   while(num_moves < BSFP_RANDOM_MOVES) {
-    _generate_neighbor(modules_prop);
+    _generate_neighbor(_modules_prop);
 
-    area_prop = _pack(modules_prop);
+    area_prop = _pack(_modules_prop);
     delta_area = area_prop > area_curr ? 
                  (area_prop - area_curr) : (area_curr - area_prop);
     //std::cout << "area_prop = " << area_prop << ", area_curr = " << area_curr << '\n';

@@ -19,7 +19,10 @@ class BStarTester {
     void delete_node(BNode* node_ptr);
     void insert_node(BNode* target, std::vector<BNode>& modules);
     void dump_modules(const std::vector<BNode> modules) const;
-                
+    void deep_copy_modules(std::vector<BNode>& source,
+                           std::vector<BNode>& destination);               
+    void rotate_module(BNode* node);
+
     BStar bs;
     std::vector<int> contour;
 };
@@ -47,31 +50,7 @@ std::vector<BNode*> BStarTester::get_contour() const {
 
 
 BNode* BStarTester::get_modules(){
-  /*
-  bs._modules[0]->parent = bs._modules[1];
-  bs._modules[0]->left = bs._modules[3];
-  bs._modules[0]->right = nullptr;
-  
-  bs._modules[1]->parent = nullptr;
-  bs._modules[1]->left = bs._modules[0];
-  bs._modules[1]->right = bs._modules[2];
-  
-  bs._modules[2]->parent = bs._modules[1];;
-  bs._modules[2]->left = nullptr;
-  bs._modules[2]->right = nullptr;
-  
-  bs._modules[3]->parent = bs._modules[0];
-  bs._modules[3]->left = nullptr;
-  bs._modules[3]->right = nullptr;
-  */
-  std::cout << "bs._modules[" << 0 << "] at " << &((bs._modules)[0]) << '\n';
-  std::cout << "bs._modules[" << 1 << "] at " << &((bs._modules)[1]) << '\n';
-  std::cout << "bs._modules[" << 2 << "] at " << &((bs._modules)[2]) << '\n';
-  std::cout << "bs._modules[" << 3 << "] at " << &((bs._modules)[3]) << '\n';
-  std::cout << "bs._modules[" << 4 << "] at " << &((bs._modules)[4]) << '\n';
-  std::cout << "bs._modules[" << 5 << "] at " << &((bs._modules)[5]) << '\n';
-  return &(bs._modules[0]);
-
+  return &(bs._modules_curr[0]);
 }
 
 
@@ -104,6 +83,17 @@ void BStarTester::dump_modules(const std::vector<BNode> modules) const {
   bs._dump(modules);
 }
 
+
+void BStarTester::deep_copy_modules(
+  std::vector<BNode>& source, std::vector<BNode>& destination) {
+  
+  bs._deep_copy_modules(source, destination);                                  
+}
+
+
+void BStarTester::rotate_module(BNode* node) {
+  bs._rotate_module(node);
+}
 
 
 }
