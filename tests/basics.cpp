@@ -9,7 +9,7 @@ TEST_CASE("swap_two_nodes" * doctest::timeout(300)) {
   
   bstar::BStarTester tester;
 
-  tester.open("/home/chiu/bstar_floorplan/circuits/circuit2.txt");
+  tester.open("../../circuits/circuit2.txt");
   tester.generate_initial_tree();
    
   bstar::BNode* modules;
@@ -954,7 +954,7 @@ TEST_CASE("delete_node" * doctest::timeout(300)) {
 
   bstar::BStarTester tester;
 
-  tester.open("/home/chiu/bstar_floorplan/circuits/circuit2.txt");
+  tester.open("../../circuits/circuit2.txt");
   tester.generate_initial_tree();
 
   bstar::BNode* modules;
@@ -1205,7 +1205,7 @@ TEST_CASE("deep_copy" * doctest::timeout(300)) {
 
   bstar::BStarTester tester;
 
-  tester.open("/home/chiu/bstar_floorplan/circuits/circuit2.txt");
+  tester.open("../../circuits/circuit2.txt");
   tester.generate_initial_tree();
 
   //bstar::BNode* modules;
@@ -1412,7 +1412,7 @@ TEST_CASE("rotate_module" * doctest::timeout(300)) {
 
   bstar::BStarTester tester;
 
-  tester.open("/home/chiu/bstar_floorplan/circuits/circuit2.txt");
+  tester.open("../../circuits/circuit2.txt");
   tester.generate_initial_tree();
 
   bstar::BNode* modules;
@@ -1438,9 +1438,6 @@ TEST_CASE("rotate_module" * doctest::timeout(300)) {
 TEST_CASE("delete_and_insert" * doctest::timeout(300)) {
 
   bstar::BStarTester tester;
-
-  //tester.open("/home/chiu/bstar_floorplan/circuits/circuit2.txt");
-  //tester.generate_initial_tree();
 
   std::vector<bstar::BNode> modules;
 
