@@ -34,7 +34,17 @@ struct BNode {
   BNode* right{ nullptr };  
 };
 
+/*
+struct Module {
+  size_t width;
+  size_t height;
+  size_t llx;
+  size_t lly;
+}
 
+struct BNode {
+  Module* module;
+}; */
 
 class BStar {
   friend class BStarTester;
@@ -49,6 +59,8 @@ class BStar {
 
   private:
     std::string _input_file;
+
+    std::vector<Module> _modules;
     
     std::vector<BNode> _modules_curr;
     std::vector<BNode> _modules_best;
@@ -63,7 +75,9 @@ class BStar {
     size_t _ury = 0;
 
     std::vector<size_t> _cost;
-
+    
+    // TODO: you can use the single random engine for the entire
+    //       Btree floorplan optimization
     //std::mt19937 _gen(_rd());  
     //std::uniform_real_distribution<> _dis(0, 1);
 
@@ -103,7 +117,8 @@ class BStar {
 
 
 // BStar constructor
-BStar::BStar() {
+// TODO: non-templated function must be inline in the header file
+inline BStar::BStar() {
 
   std::cout << "bstar constructor\n";
   std::srand(std::time(0)); 
@@ -267,7 +282,6 @@ void BStar::_generate_initial_tree() {
     std::cout << '\n';
   }
   */
-
 }
 
 
@@ -562,8 +576,10 @@ void BStar::_swap_two_nodes(BNode* node1, BNode* node2) {
     if (node2->right)  node2->right->parent = node2;
 
     if (n1_old_parent) {
-      if (n1_old_parent->left == node1)
+      // TODO: using RAII scope even though it has a single line ...
+      if (n1_old_parent->left == node1) {
         n1_old_parent->left = node2;
+      }
       else
         n1_old_parent->right = node2; 
     }
@@ -595,6 +611,8 @@ void BStar::_delete_and_insert(BNode* target, std::vector<BNode>& modules) {
 
 // insert the node to the tree
 void BStar::_insert_node(BNode* target, std::vector<BNode>& modules) {
+
+  //assert(target != nullptr)
   
   BNode* parent = &(modules[std::rand()%(modules.size())]);
 
@@ -806,9 +824,9 @@ void BStar::_generate_neighbor(std::vector<BNode>& modules) {
 
   //std::cout << "before generating neighbot\n";
   //_dump(modules_prop);
-
-  BNode* node1 = &(modules[std::rand()%(modules.size())]);
   
+  // TODO: do not use std::rand
+  BNode* node1 = &(modules[std::rand()%(modules.size())]);
   BNode* node2 = &(modules[std::rand()%(modules.size())]);
   
   switch(std::rand()%3) {
