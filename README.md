@@ -1,3 +1,8 @@
 # bstar_floorplan
 
-Under construction
+makir build
+cd build
+camke ../
+make
+make test
+./main/bsfp ../circuits/circuit1.txt output
