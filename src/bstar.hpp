@@ -62,6 +62,8 @@ class BStar {
     size_t _urx = 0;
     size_t _ury = 0;
 
+    std::vector<size_t> _cost;
+
     //std::mt19937 _gen(_rd());  
     //std::uniform_real_distribution<> _dis(0, 1);
 
@@ -95,6 +97,8 @@ class BStar {
 
     void _deep_copy_modules(std::vector<BNode>& source, 
                             std::vector<BNode>& destination);
+
+    void _dump_cost(const std::string output_file) const;
 };
 
 
@@ -168,6 +172,8 @@ void BStar::dump(std::ostream& os) const {
 // dump floorplan to a file with a json extesion
 // not yet finished
 void BStar::dump_json(std::string output_file) const {
+
+  _dump_cost(output_file);
   
   if(output_file.rfind(".json") == std::string::npos)
     output_file.append(".json");
@@ -190,7 +196,7 @@ void BStar::dump_json(std::string output_file) const {
           << ",\"coordinates\":"
           << "[";
 
-  for(size_t i = 0; i < _modules_best.size(); ++i) {
+  for (size_t i = 0; i < _modules_best.size(); ++i) {
     outfile << "{\"idx\":"    << _modules_best[i].id
             << ",\"llx\":"    << _modules_best[i].llx
             << ",\"lly\":"    << _modules_best[i].lly
@@ -206,6 +212,21 @@ void BStar::dump_json(std::string output_file) const {
 
 }
 
+
+void BStar::_dump_cost(const std::string output_file) const {
+
+  std::ofstream outfile(output_file+"_cost.txt", std::ios::out);
+    
+  if(!outfile) {
+    std::cerr << "File could not be opened for writing\n";
+    std::exit(EXIT_FAILURE); 
+  }
+
+  for (auto c : _cost) {
+    outfile << c << '\n';
+  }
+
+}
 
 // generate an initial ordered binary tree
 void BStar::_generate_initial_tree() {
@@ -743,9 +764,10 @@ void BStar::_simulated_annealing(const double initial_temperature) {
       std::cout << "area_curr = " << area_curr << " , area_prop = " << area_prop << '\n';
       double cost = area_prop < area_curr ? 
                     (double)-1*(area_curr - area_prop) : area_prop - area_curr;
-
+      
       //std::cout << "cost = " << cost << '\n';
       if (cost < 0) {
+        _cost.push_back(area_curr - area_prop);
         _deep_copy_modules(_modules_prop, _modules_curr);
         //modules_curr = modules_prop;
         area_curr = area_prop;
@@ -755,7 +777,6 @@ void BStar::_simulated_annealing(const double initial_temperature) {
           _deep_copy_modules(_modules_prop, _modules_best);
           area_best = area_prop;
         }
-
       }
 
       else {
@@ -763,6 +784,7 @@ void BStar::_simulated_annealing(const double initial_temperature) {
         auto prob = std::exp(-cost/temperature);
 
         if (prob > dis(gen)) {
+          _cost.push_back(area_prop - area_curr);
           std::cout << "take worse solution with area = " << _urx << "*" << _ury << " = " << area_prop << "\n";
           _dump(_modules_prop);
           _deep_copy_modules(_modules_prop, _modules_curr);
