@@ -4,7 +4,7 @@ makir build
 
 cd build
 
-camke ../
+cmake ../
 
 make
 
