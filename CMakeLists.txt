@@ -9,6 +9,11 @@ project(BSatr_floorplan VERSION 1.0.0 LANGUAGES CXX)
 option(BSFP_BUILD_TESTS "Enables builds of tests" ON)
 option(BSFP_BUILD_MAIN "Enables builds of main programs" ON)
 
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+
 # project-specific variables
 set(BSFP_INC_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include")
 set(BSFP_LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib")
